@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define GRID_COLS 20
-#define GRID_ROWS 20
+#define GRID_COLS 50
+#define GRID_ROWS 30
 #define GRID_CELLS (GRID_COLS*GRID_ROWS)
 #define ALIVE '*'
 #define DEAD '.'
+
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_RESET "\x1b[0m"
 
 /* Translate the x, y coordiantes into the linear array. It implements 
  * wrapping, so also negative indexes are supported. */
@@ -42,7 +45,13 @@ void print_grid(char *grid) {
     printf("\x1b[3J\x1b[H\x1b[2J"); // Clear the screen
     for (int y = 0; y < GRID_ROWS; y++) {
         for (int x = 0; x < GRID_COLS; x++) {
-            printf("%c", get_cell(grid,x,y));
+            char cell = get_cell(grid,x,y);
+            if (cell == ALIVE) { 
+                printf("%s%c%s",ANSI_COLOR_RED, cell, ANSI_COLOR_RESET);
+            }
+            else {
+                printf("%c", cell);
+            }
         }
         printf("\n");
     }
@@ -100,10 +109,10 @@ int main(void){
     while(1) {
         compute_new_state(old_grid, new_grid);
         print_grid(new_grid);
-        usleep(100000);
+        usleep(50000);
         compute_new_state(new_grid, old_grid);
         print_grid(old_grid);
-        usleep(100000);
+        usleep(50000);
     }
     return 0;
 }
